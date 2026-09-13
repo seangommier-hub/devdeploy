@@ -21,8 +21,9 @@ npm install
 npm run build --workspace=@devdeploy/core
 npm run build --workspace=@devdeploy/agent
 
-API_KEY=$(node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))")
-PLIST="$HOME/Library/LaunchAgents/com.devdeploy.agent.plist"
+LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
+PLIST="$LAUNCH_AGENTS_DIR/com.devdeploy.agent.plist"
+mkdir -p "$LAUNCH_AGENTS_DIR" "$HOME/Library/Logs"
 
 echo "==> Writing launchd job so the agent starts automatically at login"
 cat > "$PLIST" <<PLIST_EOF
@@ -34,14 +35,9 @@ cat > "$PLIST" <<PLIST_EOF
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/env</string>
-    <string>node</string>
-    <string>$INSTALL_DIR/packages/agent/dist/index.js</string>
+    <string>bash</string>
+    <string>$INSTALL_DIR/packages/agent/start.sh</string>
   </array>
-  <key>EnvironmentVariables</key>
-  <dict>
-    <key>AGENT_API_KEY</key><string>$API_KEY</string>
-    <key>AGENT_PORT</key><string>8443</string>
-  </dict>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
   <key>StandardOutPath</key><string>$HOME/Library/Logs/devdeploy-agent.log</string>
@@ -52,13 +48,13 @@ PLIST_EOF
 
 launchctl unload "$PLIST" 2>/dev/null || true
 launchctl load "$PLIST"
+sleep 2
 
 echo ""
-echo "==> Agent installed and running on port 8443."
+echo "==> Agent installed and running on port 8443 (see $INSTALL_DIR/packages/agent/.agent-api-key)."
 echo "==> Pairing details — enter these in DevDeploy's dashboard (Settings > Build Workers > Add Worker):"
 echo "    Provider type: MAC_XCODE"
-echo "    Base URL:      http://$(ipconfig getifaddr en0 2>/dev/null || echo THIS-MACS-IP):8443"
-echo "    API key:       $API_KEY"
+tail -n 5 "$HOME/Library/Logs/devdeploy-agent.log"
 echo ""
 echo "==> If this is a MacinCloud instance, the Pi must be able to reach that URL —"
 echo "    confirm MacinCloud's firewall/network settings allow inbound connections on 8443,"
