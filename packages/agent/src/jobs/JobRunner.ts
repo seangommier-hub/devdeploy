@@ -1,9 +1,10 @@
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import type { JobLogLine } from "@devdeploy/core";
 import { execCommand } from "../shared/execCommand.js";
 import { findXcodeProject } from "./steps/findXcodeProject.js";
 import { packageUnsignedIpa } from "./steps/packageUnsignedIpa.js";
+import { patchExpoModulesJsi } from "./steps/patchExpoModulesJsi.js";
 import type { AgentJob, AgentJobStore } from "./AgentJobStore.js";
 
 async function exists(path: string): Promise<boolean> {
@@ -54,10 +55,22 @@ export class JobRunner {
     await execCommand("npm", ["ci"], { cwd: job.workDir, onLog: (line) => this.store.appendLog(job.id, line), signal: job.abortController.signal });
   }
 
+  private async removeDevClient(job: AgentJob): Promise<void> {
+    // expo-dev-client/-menu/-launcher are development-only (connecting to a live Metro
+    // server) and pull in asset catalogs that can need a matching iOS Simulator runtime
+    // — not needed for this standalone Release build. Same removal as ADR-HEARTH-031's
+    // proven CI recipe (universal-remote repo).
+    for (const pkg of ["expo-dev-client", "expo-dev-menu", "expo-dev-launcher"]) {
+      await rm(join(job.workDir, "node_modules", pkg), { recursive: true, force: true });
+    }
+  }
+
   private async ensureIosProject(job: AgentJob): Promise<string> {
     const iosDir = join(job.workDir, "ios");
     const onLog = (line: JobLogLine) => this.store.appendLog(job.id, line);
     if (!(await exists(iosDir)) && (await exists(join(job.workDir, "app.json")))) {
+      await this.removeDevClient(job);
+      await patchExpoModulesJsi(job.workDir, onLog);
       this.log(job, "No ios/ directory — running expo prebuild");
       await execCommand("npx", ["expo", "prebuild", "--platform", "ios", "--non-interactive"], {
         cwd: job.workDir,
