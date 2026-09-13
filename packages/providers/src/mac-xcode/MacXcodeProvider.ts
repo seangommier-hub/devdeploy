@@ -1,4 +1,4 @@
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   BuildProviderType,
@@ -106,6 +106,11 @@ export class MacXcodeProvider implements BuildProvider {
 
     const bytes = await this.clientFor(ctx.worker).downloadArtifact(ctx.job.id);
     const filePath = join(ctx.workDir, result.artifact.fileName);
+    // Unlike the other providers, nothing on the Pi side ever creates ctx.workDir —
+    // this provider never checks out source or builds locally, only the remote Mac
+    // agent does. This is the first (and only) local write, so it's the right place
+    // to ensure the directory exists.
+    await mkdir(ctx.workDir, { recursive: true });
     await writeFile(filePath, Buffer.from(bytes));
     const sha256 = await sha256File(filePath);
     if (sha256 !== result.artifact.sha256) {
