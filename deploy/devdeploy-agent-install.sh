@@ -18,6 +18,7 @@ cd "$INSTALL_DIR"
 
 echo "==> Installing and building the agent package"
 npm install
+npm run build --workspace=@devdeploy/core
 npm run build --workspace=@devdeploy/agent
 
 API_KEY=$(node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))")
