@@ -13,6 +13,12 @@ cd "$(dirname "$0")"
 # resolves the same way here as it does in an interactive shell.
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.nvm/current/bin:$PATH"
 
+# launchd also starts with no locale set at all, which breaks CocoaPods/Ruby
+# ("Unicode Normalization not appropriate for ASCII-8BIT") - confirmed live
+# 2026-09-13 on a real `pod install` run dispatched through this agent.
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
 KEY_FILE=".agent-api-key"
 if [ ! -f "$KEY_FILE" ]; then
   openssl rand -hex 32 > "$KEY_FILE"
