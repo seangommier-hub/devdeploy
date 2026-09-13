@@ -75,11 +75,11 @@ export async function patchExpoModulesJsi(workDir: string, onLog: (line: JobLogL
     );
   }
 
-  await replaceExactlyOnce(
-    join(nodeModules, SCHEDULER_H),
-    "SWIFT_RETURNS_RETAINED RuntimeScheduler(",
-    "RuntimeScheduler(",
-  );
+  // Two constructors carry this annotation (see the ADR) — sed's non-global
+  // `s///` still fixes both since it applies per line, so replaceAll here.
+  const schedulerHPath = join(nodeModules, SCHEDULER_H);
+  const schedulerH = await readFile(schedulerHPath, "utf8");
+  await writeFile(schedulerHPath, schedulerH.replaceAll("SWIFT_RETURNS_RETAINED RuntimeScheduler(", "RuntimeScheduler("), "utf8");
 
   const runtimeSwiftPath = join(nodeModules, RUNTIME_SWIFT);
   await replaceExactlyOnce(
