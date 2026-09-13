@@ -9,5 +9,11 @@ echo "key file contents:"
 cat -A .agent-api-key
 echo "local request with that key:"
 curl -s -o /dev/null -w "HTTP %{http_code}\n" --oauth2-bearer "$(cat .agent-api-key)" http://127.0.0.1:8443/capabilities
+echo "self request via own public IP:"
+curl -s -o /dev/null -w "HTTP %{http_code}\n" --oauth2-bearer "$(cat .agent-api-key)" http://205.251.15.103:8443/capabilities
+echo "key file byte length:"
+wc -c < .agent-api-key
+echo "env var byte length inside the running process (from /proc equivalent - launchctl print):"
+launchctl print gui/$(id -u)/com.devdeploy.agent 2>/dev/null | grep -A2 AGENT_API_KEY
 echo "launchd job status:"
 launchctl list | grep devdeploy || echo "not in launchctl list"
