@@ -1,0 +1,102 @@
+:root {
+  color-scheme: light dark;
+  --bg: #0f1115;
+  --panel: #171a21;
+  --border: #2a2e38;
+  --text: #e6e8ec;
+  --muted: #8b93a1;
+  --accent: #4f8cff;
+  --ready: #3ecf8e;
+  --degraded: #e6b800;
+  --unavailable: #e05252;
+  --not-configured: #5b6270;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header h1 { font-size: 18px; margin: 0; }
+
+main {
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+section h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.card h3 { margin: 0 0 8px; font-size: 14px; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge.READY { background: rgba(62,207,142,0.15); color: var(--ready); }
+.badge.DEGRADED { background: rgba(230,184,0,0.15); color: var(--degraded); }
+.badge.UNAVAILABLE { background: rgba(224,82,82,0.15); color: var(--unavailable); }
+.badge.NOT_CONFIGURED { background: rgba(91,98,112,0.2); color: var(--not-configured); }
+.badge.SUCCEEDED { background: rgba(62,207,142,0.15); color: var(--ready); }
+.badge.FAILED { background: rgba(224,82,82,0.15); color: var(--unavailable); }
+.badge.CANCELLED { background: rgba(91,98,112,0.2); color: var(--not-configured); }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 500; }
+
+tr.job-row { cursor: pointer; }
+tr.job-row:hover { background: rgba(255,255,255,0.03); }
+
+#log-panel {
+  background: #05070a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12px;
+  height: 280px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.muted { color: var(--muted); }

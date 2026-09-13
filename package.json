@@ -1,0 +1,22 @@
+{
+  "name": "devdeploy",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Raspberry Pi build orchestrator: dispatches build jobs to the right environment (local Pi, container, Mac/Xcode, Xcode Cloud, GitHub Actions macOS, Expo EAS) and manages artifacts and device deployment.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@devdeploy/core && npm run build --workspace=@devdeploy/providers && npm run build --workspace=@devdeploy/server && npm run build --workspace=@devdeploy/agent",
+    "typecheck": "npm run build",
+    "server": "npm run start --workspace=@devdeploy/server",
+    "agent": "npm run start --workspace=@devdeploy/agent"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "@types/node": "22.20.2"
+  }
+}

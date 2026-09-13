@@ -1,0 +1,15 @@
+[Unit]
+Description=DevDeploy build orchestrator
+After=network.target docker.service
+
+[Service]
+Type=simple
+User=seangommier
+WorkingDirectory=/home/seangommier/devdeploy
+EnvironmentFile=-/home/seangommier/devdeploy/.env
+ExecStart=/usr/bin/node packages/server/dist/index.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

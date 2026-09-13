@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DevDeploy</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>DevDeploy</h1>
+    <span class="muted" id="server-status">connecting…</span>
+  </header>
+  <main>
+    <section>
+      <h2>Build Workers</h2>
+      <div class="cards" id="workers-cards"><p class="muted">Loading…</p></div>
+    </section>
+
+    <section>
+      <h2>Apps</h2>
+      <div class="cards" id="apps-cards"><p class="muted">Loading…</p></div>
+    </section>
+
+    <section>
+      <h2>Jobs</h2>
+      <table>
+        <thead>
+          <tr><th>Job</th><th>App</th><th>Provider</th><th>Status</th><th>Created</th></tr>
+        </thead>
+        <tbody id="jobs-body"></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Live Log <span class="muted" id="log-job-id"></span></h2>
+      <div id="log-panel">Select a job to view its log.</div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
