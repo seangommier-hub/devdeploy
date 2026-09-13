@@ -7,7 +7,9 @@
 set -euo pipefail
 
 INSTALL_DIR="$HOME/devdeploy-agent"
-REPO_URL="${DEVDEPLOY_REPO_URL:?Set DEVDEPLOY_REPO_URL to the devdeploy repo GitHub URL before running}"
+# Defaults to this project's own repo so the common case needs no env var at all
+# (still overridable for a fork/mirror). Positional $1 is also accepted.
+REPO_URL="${1:-${DEVDEPLOY_REPO_URL:-https://github.com/seangommier-hub/devdeploy}}"
 
 echo "==> Cloning DevDeploy into $INSTALL_DIR"
 rm -rf "$INSTALL_DIR"
