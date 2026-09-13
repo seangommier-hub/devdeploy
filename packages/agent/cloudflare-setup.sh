@@ -6,7 +6,8 @@
 # keyboard bug (see reference-macincloud-remote-mac memory).
 set -euo pipefail
 TUNNEL_ID="${1:?Usage: cloudflare-setup.sh <tunnel-id>}"
-CLOUDFLARED_BIN="$(command -v cloudflared)"
+CLOUDFLARED_BIN="$HOME/.local/bin/cloudflared"
+[ -x "$CLOUDFLARED_BIN" ] || { echo "Run cloudflare-install.sh first"; exit 1; }
 
 mkdir -p "$HOME/.cloudflared"
 cat > "$HOME/.cloudflared/config.yml" <<CONFIG_EOF
