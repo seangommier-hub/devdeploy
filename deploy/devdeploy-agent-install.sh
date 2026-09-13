@@ -7,7 +7,7 @@
 set -euo pipefail
 
 INSTALL_DIR="$HOME/devdeploy-agent"
-REPO_URL="${DEVDEPLOY_REPO_URL:?Set DEVDEPLOY_REPO_URL to this repo's GitHub URL before running}"
+REPO_URL="${DEVDEPLOY_REPO_URL:?Set DEVDEPLOY_REPO_URL to the devdeploy repo GitHub URL before running}"
 
 echo "==> Cloning DevDeploy into $INSTALL_DIR"
 rm -rf "$INSTALL_DIR"
