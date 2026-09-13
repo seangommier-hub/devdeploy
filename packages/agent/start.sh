@@ -8,6 +8,11 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# launchd's own PATH is minimal (/usr/bin:/bin:/usr/sbin:/sbin) and doesn't
+# include Homebrew or nvm install locations - add the common ones so `node`
+# resolves the same way here as it does in an interactive shell.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.nvm/current/bin:$PATH"
+
 KEY_FILE=".agent-api-key"
 if [ ! -f "$KEY_FILE" ]; then
   openssl rand -hex 32 > "$KEY_FILE"
