@@ -52,7 +52,7 @@ Where can an Android build actually run?
    passthrough. `POST /api/android/install/:artifactId` runs
    `adb install -r` on the Pi (only for `apk` artifacts; optional `serial`
    in the body when more than one phone is ready); `GET /api/android/devices`
-   lists connected devices. `adb` must be installed on the Pi (`android-tools-adb`).
+   lists connected devices. `adb` must be installed on the Pi (Debian trixie package `adb`, installed 2026-09-23).
 
 ## Consequences
 
