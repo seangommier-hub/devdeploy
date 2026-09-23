@@ -3,6 +3,8 @@ import { join } from "node:path";
 import type { JobLogLine } from "@devdeploy/core";
 import { execCommand } from "../shared/execCommand.js";
 import { findXcodeProject } from "./steps/findXcodeProject.js";
+import { buildAndroidApk } from "./steps/buildAndroidApk.js";
+import { packageApk } from "./steps/packageApk.js";
 import { packageUnsignedIpa } from "./steps/packageUnsignedIpa.js";
 import { patchExpoModulesJsi } from "./steps/patchExpoModulesJsi.js";
 import type { AgentJob, AgentJobStore } from "./AgentJobStore.js";
@@ -85,6 +87,9 @@ export class JobRunner {
   }
 
   async runBuild(job: AgentJob): Promise<void> {
+    if (job.platform === "ANDROID") {
+      return buildAndroidApk({ workDir: job.workDir, onLog: (line) => this.store.appendLog(job.id, line), signal: job.abortController.signal });
+    }
     const iosDir = await this.ensureIosProject(job);
     const { path, isWorkspace, scheme } = await findXcodeProject(iosDir);
     this.log(job, `Building scheme "${scheme}" from ${path}`);
@@ -109,6 +114,10 @@ export class JobRunner {
   }
 
   async runSign(job: AgentJob): Promise<void> {
+    if (job.platform === "ANDROID") {
+      this.log(job, "Android release APK is signed with Expo's template debug keystore — installable, but not a Play Store signature (ADR-DEVDEPLOY-002).");
+      return;
+    }
     this.log(job, "No signing identity/provisioning automation configured yet — producing an unsigned artifact. Pair with a sideload tool (AltStore/SideSign) or a paid Apple Developer profile to install.");
   }
 
@@ -117,6 +126,10 @@ export class JobRunner {
   }
 
   async runExport(job: AgentJob): Promise<void> {
+    if (job.platform === "ANDROID") {
+      job.artifact = await packageApk(job.workDir, await appName(job.workDir));
+      return;
+    }
     const productsDir = join(job.workDir, "build", "Build", "Products", "Release-iphoneos");
     const name = await appName(job.workDir);
     const onLog = (line: JobLogLine) => this.store.appendLog(job.id, line);

@@ -58,7 +58,9 @@ export class MacXcodeProvider implements BuildProvider {
   canHandle(profile: BuildProfile, capabilities: ProviderCapabilities): boolean {
     const platform = profile.platform;
     const isApplePlatform = platform === Platform.IOS || platform === Platform.IPADOS || platform === Platform.MACOS;
-    return isApplePlatform && Boolean(capabilities.hasXcode);
+    if (isApplePlatform) return Boolean(capabilities.hasXcode);
+    if (platform === Platform.ANDROID) return Boolean(capabilities.hasAndroidSdk && capabilities.hasJava);
+    return false;
   }
 
   async prepareJob(ctx: JobContext): Promise<void> {
@@ -66,6 +68,7 @@ export class MacXcodeProvider implements BuildProvider {
       jobId: ctx.job.id,
       gitRepoUrl: ctx.job.gitRepoUrl,
       gitRef: ctx.job.gitRef,
+      platform: ctx.profile.platform,
     });
   }
 
@@ -124,7 +127,7 @@ export class MacXcodeProvider implements BuildProvider {
       filePath,
       sizeBytes: result.artifact.sizeBytes,
       sha256,
-      kind: "ipa",
+      kind: result.artifact.fileName.endsWith(".apk") ? "apk" : "ipa",
       signed: result.artifact.signed,
       createdAt: new Date().toISOString(),
     };

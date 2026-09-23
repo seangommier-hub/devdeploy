@@ -7,6 +7,8 @@ import { appsRoutes } from "./routes/appsRoutes.js";
 import { workersRoutes } from "./routes/workersRoutes.js";
 import { jobsRoutes } from "./routes/jobsRoutes.js";
 import { artifactsRoutes } from "./routes/artifactsRoutes.js";
+import { androidRoutes } from "./routes/androidRoutes.js";
+import { AdbInstaller } from "../deploy/AdbInstaller.js";
 import type { JobQueue } from "../jobs/JobQueue.js";
 import type { JobExecutor } from "../jobs/JobExecutor.js";
 import type { JobLogBroadcaster } from "../jobs/JobLogBroadcaster.js";
@@ -34,6 +36,7 @@ export function createApp(deps: AppDeps): Express {
   app.use("/api/workers", workersRoutes(deps.workers, deps.registry));
   app.use("/api/jobs", jobsRoutes(deps.jobs, deps.apps, deps.queue, deps.broadcaster, deps.executor));
   app.use("/api/artifacts", artifactsRoutes(deps.artifacts));
+  app.use("/api/android", androidRoutes(deps.artifacts, new AdbInstaller()));
 
   app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     deps.logger.error("Unhandled API error", { message: error.message });

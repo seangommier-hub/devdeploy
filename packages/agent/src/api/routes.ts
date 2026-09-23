@@ -5,6 +5,9 @@ import { detectMacCapabilities } from "../capabilities/detectMacCapabilities.js"
 import { AgentJobStore } from "../jobs/AgentJobStore.js";
 import { JobRunner } from "../jobs/JobRunner.js";
 
+/** Servers that predate Android support never send a platform — iOS was the only pipeline then. */
+const DEFAULT_PLATFORM = "IOS";
+
 type Step = "source" | "install" | "build" | "sign" | "test" | "export";
 
 export function agentRoutes(jobsBaseDir: string): Router {
@@ -25,10 +28,10 @@ export function agentRoutes(jobsBaseDir: string): Router {
   });
 
   router.put("/jobs/:id", async (req, res) => {
-    const { gitRepoUrl, gitRef } = req.body as { gitRepoUrl: string; gitRef: string };
+    const { gitRepoUrl, gitRef, platform } = req.body as { gitRepoUrl: string; gitRef: string; platform?: string };
     const workDir = join(jobsBaseDir, req.params.id);
     await mkdir(workDir, { recursive: true });
-    store.create({ id: req.params.id, workDir, gitRepoUrl, gitRef, logs: [], abortController: new AbortController() });
+    store.create({ id: req.params.id, workDir, gitRepoUrl, gitRef, platform: platform ?? DEFAULT_PLATFORM, logs: [], abortController: new AbortController() });
     res.status(201).json({ ok: true });
   });
 

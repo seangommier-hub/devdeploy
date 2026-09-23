@@ -31,7 +31,7 @@ export class AgentApiClient {
     return this.request("/health");
   }
 
-  createJob(payload: { jobId: string; gitRepoUrl: string; gitRef: string }): Promise<void> {
+  createJob(payload: { jobId: string; gitRepoUrl: string; gitRef: string; platform: string }): Promise<void> {
     return this.request(`/jobs/${payload.jobId}`, { method: "PUT", body: JSON.stringify(payload) });
   }
 

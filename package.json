@@ -10,7 +10,8 @@
     "build": "npm run build --workspace=@devdeploy/core && npm run build --workspace=@devdeploy/providers && npm run build --workspace=@devdeploy/server && npm run build --workspace=@devdeploy/agent",
     "typecheck": "npm run build",
     "server": "npm run start --workspace=@devdeploy/server",
-    "agent": "npm run start --workspace=@devdeploy/agent"
+    "agent": "npm run start --workspace=@devdeploy/agent",
+    "test": "npm run build && npm test --workspace=@devdeploy/agent --workspace=@devdeploy/server --workspace=@devdeploy/providers"
   },
   "engines": {
     "node": ">=20"

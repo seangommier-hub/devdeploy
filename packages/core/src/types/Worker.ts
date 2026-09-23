@@ -17,6 +17,10 @@ export interface ProviderCapabilities {
   hasCocoaPods?: boolean;
   cocoaPodsVersion?: string;
   hasSwiftPackageManager?: boolean;
+  hasJava?: boolean;
+  javaHome?: string;
+  hasAndroidSdk?: boolean;
+  androidSdkPath?: string;
   nodeVersion?: string;
   npmVersion?: string;
   macOsVersion?: string;

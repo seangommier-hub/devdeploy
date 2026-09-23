@@ -1,13 +1,6 @@
 import type { ProviderCapabilities } from "@devdeploy/core";
-import { execCapture } from "../shared/execCommand.js";
-
-async function tryCapture(command: string, args: string[]): Promise<string | undefined> {
-  try {
-    return await execCapture(command, args, process.cwd());
-  } catch {
-    return undefined;
-  }
-}
+import { tryCapture } from "../shared/tryCapture.js";
+import { detectAndroidCapabilities } from "./detectAndroidCapabilities.js";
 
 /** Probes this Mac for everything the spec asks DevDeploy to detect: Xcode, SDKs, signing, CocoaPods, disk/RAM. */
 export async function detectMacCapabilities(): Promise<ProviderCapabilities> {
@@ -23,13 +16,14 @@ export async function detectMacCapabilities(): Promise<ProviderCapabilities> {
       tryCapture("security", ["find-identity", "-v", "-p", "codesigning"]),
     ]);
 
+  const android = await detectAndroidCapabilities();
   const signingIdentities = (signingIdentitiesRaw ?? "")
     .split("\n")
     .filter((line) => line.includes(")"))
     .map((line) => line.trim());
 
   return {
-    platforms: xcodePath ? ["IOS", "IPADOS", "MACOS"] : [],
+    platforms: [...(xcodePath ? ["IOS", "IPADOS", "MACOS"] : []), ...(android.hasAndroidSdk && android.hasJava ? ["ANDROID"] : [])],
     hasXcode: Boolean(xcodePath),
     xcodeVersions: xcodeVersion ? [xcodeVersion.split("\n")[0]] : [],
     selectedXcodeVersion: xcodeVersion?.split("\n")[0],
@@ -39,6 +33,7 @@ export async function detectMacCapabilities(): Promise<ProviderCapabilities> {
     hasCocoaPods: Boolean(podVersion),
     cocoaPodsVersion: podVersion,
     hasSwiftPackageManager: Boolean(xcodePath),
+    ...android,
     nodeVersion,
     macOsVersion,
     architecture,

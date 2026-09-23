@@ -13,6 +13,8 @@ export interface AgentJob {
   workDir: string;
   gitRepoUrl: string;
   gitRef: string;
+  /** Which platform this job builds — selects the iOS or Android pipeline. */
+  platform: string;
   logs: JobLogLine[];
   abortController: AbortController;
   artifact?: ArtifactMeta;
